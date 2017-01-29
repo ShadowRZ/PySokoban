@@ -12,15 +12,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import pygame  # Necessary.
-import pygame.display
-import pygame.time
-import pygame.event
+import copy  # copy.deepcopy()
 import sys  # sys.exit()
-import movement as pysokoban_movement
-import map_data as pysokoban_map_data
-import surface as pysokoban_surface
+
+import pygame.display
+import pygame.event
+import pygame.time
 from pygame.locals import *
+
+import map_data as pysokoban_map_data
+import movement as pysokoban_movement
+import surface as pysokoban_surface
 from constants import *
 
 level_counter = 0
@@ -57,17 +59,20 @@ def main(window_width, window_height, fps, file_name):
                     direction = RIGHT
                 elif event.key == K_w:  # Up.
                     direction = UP
-                elif event.key == K_d:  # Down.
+                elif event.key == K_w:  # Down.
                     direction = DOWN
                 elif event.key == K_BACKSPACE:  # Undo.
                     pass
                 elif event.key == K_SPACE:  # Redo.
                     pass
+                if direction is not None:
                     pysokoban_movement.move(direction, map_data, player_location)
+                map_surface = pysokoban_surface.get_surface(copy.deepcopy(map_data), player_location)
         surface.blit(map_surface, map_surface_rect)
         pygame.display.update()
         fps_clock.tick(fps)
 
 
 if __name__ == '__main__':
+    # noinspection SpellCheckingInspection
     main(window_width=800, window_height=600, fps=60, file_name='level/Default.pysl')

@@ -12,8 +12,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import pygame
 import copy
+
+import pygame
+
 import floodfill as pysokoban_floodfill
 from constants import *
 
@@ -42,7 +44,7 @@ def get_surface(map_data, player_location):
                 ret.blit(BLOCK_MAP['@'], (x * TILE_WIDTH, y * TILE_HEIGHT))
                 ret.blit(BLOCK_MAP['.'], (x * TILE_WIDTH, y * TILE_HEIGHT))
             elif map_data[x][y] == '*':  # * is crate & goal
-                # Blit goal, then crate.
-                ret.blit(BLOCK_MAP['.'], (x * TILE_WIDTH, y * TILE_HEIGHT))
+                # Blit crate, then goal.
                 ret.blit(BLOCK_MAP['$'], (x * TILE_WIDTH, y * TILE_HEIGHT))
+                ret.blit(BLOCK_MAP['.'], (x * TILE_WIDTH, y * TILE_HEIGHT))
     return ret

@@ -15,13 +15,73 @@
 from constants import *
 
 
-def move(direction, map_data, player_location, map_surface):
-    if direction == UP:
-        pass
-    elif direction == DOWN:
-        pass
-    elif direction == LEFT:
-        pass
-    elif direction == RIGHT:
-        pass
+def move(direction, map_data, player_location):
+    x = player_location[0]
+    y = player_location[1]
+    if move_able(map_data, player_location, direction):
+        if direction == UP:
+            map_data[x][y] = ' '
+            if map_data[x][y - 1] == '$':
+                map_data[x][y - 1] = ' '
+                if map_data[x][y - 2] == '.':
+                    map_data[x][y - 2] = '*'
+                else:
+                    map_data[x][y - 2] = '$'
+            map_data[x][y - 1] = '@'
+            player_location[1] -= 1
+        elif direction == DOWN:
+            map_data[x][y] = ' '
+            if map_data[x][y + 1] == '$':
+                map_data[x][y + 1] = ' '
+                if map_data[x][y + 2] == '.':
+                    map_data[x][y + 2] = '*'
+                else:
+                    map_data[x][y + 2] = '$'
+            map_data[x][y + 1] = '@'
+            player_location[1] += 1
+        elif direction == LEFT:
+            map_data[x][y] = ' '
+            if map_data[x - 1][y] == '$':
+                map_data[x - 1][y] = ' '
+                if map_data[x - 2][y] == '.':
+                    map_data[x - 2][y] = '*'
+                else:
+                    map_data[x - 2][y] = '$'
+            map_data[x - 1][y] = '@'
+            player_location[0] -= 1
+        elif direction == RIGHT:
+            map_data[x][y] = ' '
+            if map_data[x + 1][y] == '$':
+                map_data[x + 1][y] = ' '
+                if map_data[x + 2][y] == '.':
+                    map_data[x + 2][y] = '*'
+                else:
+                    map_data[x + 2][y] = '$'
+            map_data[x + 1][y] = '@'
+            player_location[0] += 1
 
+
+def move_able(map_data, location, direction):
+    x = location[0]
+    y = location[1]
+    if direction == UP:
+        if map_data[x][y - 1] in (' ', '.'):
+            return True
+        elif map_data[x][y - 1] in ('$', '*'):
+            return map_data[x][y - 2] in (' ', '.')
+    elif direction == DOWN:
+        if map_data[x][y + 1] in (' ', '.'):
+            return True
+        elif map_data[x][y + 1] in ('$', '*'):
+            return map_data[x][y + 2] in (' ', '.')
+    elif direction == LEFT:
+        if map_data[x - 1][y] in (' ', '.'):
+            return True
+        elif map_data[x - 1][y] in ('$', '*'):
+            return map_data[x - 2][y] in (' ', '.')
+    elif direction == RIGHT:
+        if map_data[x + 1][y] in (' ', '.'):
+            return True
+        elif map_data[x + 1][y] in ('$', '*'):
+            return map_data[x - 2][y] in (' ', '.')
+    return False

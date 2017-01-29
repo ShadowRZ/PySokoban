@@ -75,7 +75,7 @@ def load(file_name):
             assert len(crates) >= len(goals)
 
             # Create level object.
-            game_state = {'player': (start_x, start_y),
+            game_state = {'player': [start_x, start_y],
                           'step_counter': 0,
                           'crates': crates}
             level_obj = {'width': max_width,
