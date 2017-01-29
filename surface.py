@@ -20,31 +20,31 @@ import floodfill as pysokoban_floodfill
 from constants import *
 
 
-def get_surface(map_data, player_location):
-    map_height = len(map_data)
-    map_width = len(map_data[0])
-    ret = pygame.Surface((map_width * TILE_WIDTH, map_height * TILE_HEIGHT))
+def get_surface(map_data, player_location, crates, goals):
+    """
+    Gets a surface of the map.
+    :param map_data:
+    :param player_location:
+    :param crates:
+    :param goals:
+    :return: A surface of map.
+    """
+    map_height = len(map_data) * TILE_HEIGHT
+    map_width = len(map_data[0]) * TILE_WIDTH
+    ret = pygame.Surface((map_width, map_height))
     ret.fill(BG_COLOR)
 
     data_copy = copy.deepcopy(map_data)
     # Floodfill up
-    pysokoban_floodfill.floodfill(data_copy, ret, player_location)
+    pysokoban_floodfill.floodfill(data_copy, player_location)
 
-    for x in range(len(data_copy[0])):
-        for y in range(len(data_copy)):
+    for x in range(len(data_copy)):
+        for y in range(len(data_copy[0])):
             if data_copy[x][y] in BLOCK_MAP:
                 ret.blit(BLOCK_MAP[data_copy[x][y]], (x * TILE_WIDTH, y * TILE_HEIGHT))
-
-    for x in range(len(map_data[0])):
-        for y in range(len(map_data)):
-            if map_data[x][y] in BLOCK_MAP:
-                ret.blit(BLOCK_MAP[map_data[x][y]], (x * TILE_WIDTH, y * TILE_HEIGHT))
-            elif map_data[x][y] == '+':  # + is player & goal
-                # Blit player, then goal.
-                ret.blit(BLOCK_MAP['@'], (x * TILE_WIDTH, y * TILE_HEIGHT))
-                ret.blit(BLOCK_MAP['.'], (x * TILE_WIDTH, y * TILE_HEIGHT))
-            elif map_data[x][y] == '*':  # * is crate & goal
-                # Blit crate, then goal.
-                ret.blit(BLOCK_MAP['$'], (x * TILE_WIDTH, y * TILE_HEIGHT))
-                ret.blit(BLOCK_MAP['.'], (x * TILE_WIDTH, y * TILE_HEIGHT))
+    for crate in crates:
+        ret.blit(BLOCK_MAP['$'], (crate[0] * TILE_WIDTH, crate[1] * TILE_HEIGHT))
+    for goal in goals:
+        ret.blit(BLOCK_MAP['.'], (goal[0] * TILE_WIDTH, goal[1] * TILE_HEIGHT))
+    ret.blit(pygame.image.load(PLAYER_DOWN), (player_location[0] * TILE_WIDTH, player_location[1] * TILE_HEIGHT))
     return ret

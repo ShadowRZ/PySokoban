@@ -15,73 +15,82 @@
 from constants import *
 
 
-def move(direction, map_data, player_location):
+def move(direction, map_data, player_location, crates):
+    # type: (str, list, list, list) -> bool
+    """
+    Given a map and game state object, see if it is possible for the
+    player to make the given move. If it is, then change the player's
+    position (and the position of any pushed star). If not, do nothing.
+    :rtype: bool
+    :param direction: Direction to move.
+    :param map_data: Map Data
+    :param player_location: Player location.
+    :param crates: Crate locations.
+    :return True if the player moved, otherwise False.
+    """
     x = player_location[0]
     y = player_location[1]
-    if move_able(map_data, player_location, direction):
-        if direction == UP:
-            map_data[x][y] = ' '
-            if map_data[x][y - 1] == '$':
-                map_data[x][y - 1] = ' '
-                if map_data[x][y - 2] == '.':
-                    map_data[x][y - 2] = '*'
-                else:
-                    map_data[x][y - 2] = '$'
-            map_data[x][y - 1] = '@'
-            player_location[1] -= 1
-        elif direction == DOWN:
-            map_data[x][y] = ' '
-            if map_data[x][y + 1] == '$':
-                map_data[x][y + 1] = ' '
-                if map_data[x][y + 2] == '.':
-                    map_data[x][y + 2] = '*'
-                else:
-                    map_data[x][y + 2] = '$'
-            map_data[x][y + 1] = '@'
-            player_location[1] += 1
-        elif direction == LEFT:
-            map_data[x][y] = ' '
-            if map_data[x - 1][y] == '$':
-                map_data[x - 1][y] = ' '
-                if map_data[x - 2][y] == '.':
-                    map_data[x - 2][y] = '*'
-                else:
-                    map_data[x - 2][y] = '$'
-            map_data[x - 1][y] = '@'
-            player_location[0] -= 1
-        elif direction == RIGHT:
-            map_data[x][y] = ' '
-            if map_data[x + 1][y] == '$':
-                map_data[x + 1][y] = ' '
-                if map_data[x + 2][y] == '.':
-                    map_data[x + 2][y] = '*'
-                else:
-                    map_data[x + 2][y] = '$'
-            map_data[x + 1][y] = '@'
-            player_location[0] += 1
-
-
-def move_able(map_data, location, direction):
-    x = location[0]
-    y = location[1]
+    x_offset = 0
+    y_offset = 0
     if direction == UP:
-        if map_data[x][y - 1] in (' ', '.'):
-            return True
-        elif map_data[x][y - 1] in ('$', '*'):
-            return map_data[x][y - 2] in (' ', '.')
+        y_offset -= 1
     elif direction == DOWN:
-        if map_data[x][y + 1] in (' ', '.'):
-            return True
-        elif map_data[x][y + 1] in ('$', '*'):
-            return map_data[x][y + 2] in (' ', '.')
+        y_offset += 1
     elif direction == LEFT:
-        if map_data[x - 1][y] in (' ', '.'):
-            return True
-        elif map_data[x - 1][y] in ('$', '*'):
-            return map_data[x - 2][y] in (' ', '.')
+        x_offset -= 1
     elif direction == RIGHT:
-        if map_data[x + 1][y] in (' ', '.'):
-            return True
-        elif map_data[x + 1][y] in ('$', '*'):
-            return map_data[x - 2][y] in (' ', '.')
+        x_offset += 1
+    if is_wall(map_data, x + x_offset, y + y_offset):
+        return False
+    else:
+        if (x + x_offset, y + y_offset) in crates:
+            # There is a crate.
+            if not is_blocked(map_data, x + x_offset * 2, y + y_offset * 2, crates):
+                # Move the crate.
+                index = crates.index((x + x_offset, y + y_offset))
+                crates[index] = (crates[index][0] + x_offset, crates[index][1] + y_offset)
+            else:
+                return False
+        player_location[0] += x_offset
+        player_location[1] += y_offset
+
+
+def is_wall(map_data, x, y):
+    # type: (list, int, int) -> bool
+    """
+    Check if it is wall.
+    :param map_data: Map data.
+    :param x: X to check.
+    :param y: Y to check.
+    :return: True if it is wall. False otherwise.
+    :rtype: bool
+    """
+    if x < 0 or x >= len(map_data) or y < 0 or y >= len(map_data[x]):
+        # Out of range.
+        return False
+    elif map_data[x][y] == '#':
+        # It is.
+        return True
     return False
+
+
+def is_blocked(map_data, x, y, crates):
+    # type: (list, int, int, list) -> bool
+    """
+    Check if it is blocked.
+    :rtype: bool
+    :param map_data: Map data
+    :param x: X to check.
+    :param y: Y to check.
+    :param crates: Crate locations
+    :return: True if it is blocked, False otherwise.
+    """
+    if is_wall(map_data, x, y):
+        # Blocked by wall.
+        return True
+    elif x < 0 or x >= len(map_data) or y < 0 or y >= len(map_data[x]):
+        # Out of range.
+        return False
+    elif (x, y) in crates:
+        # Blocked by crates.
+        return True

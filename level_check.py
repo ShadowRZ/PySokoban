@@ -14,23 +14,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-def floodfill(map_data, location):
+def level_is_complete(crates, goals):
+    # type: (list, list) -> bool
     """
-    Flood-fill the map.
-    :param map_data: Map data
-    :param location:
+    Check if a level is complete.
+    :rtype: bool
+    :param crates: A list of crates.
+    :param goals: A list of goals.
+    :return: True if a level is completed.
     """
-    x = location[0]
-    y = location[1]
-    if not map_data[x + 1][y] in ('o', '#'):
-        map_data[x + 1][y] = 'o'
-        floodfill(map_data, (x + 1, y))
-    if not map_data[x - 1][y] in ('o', '#'):
-        map_data[x - 1][y] = 'o'
-        floodfill(map_data, (x - 1, y))
-    if not map_data[x][y + 1] in ('o', '#'):
-        map_data[x][y + 1] = 'o'
-        floodfill(map_data, (x, y + 1))
-    if not map_data[x][y - 1] in ('o', '#'):
-        map_data[x][y - 1] = 'o'
-        floodfill(map_data, (x, y - 1))
+    for goal in goals:
+        if goal not in crates:
+            return False
+    return True

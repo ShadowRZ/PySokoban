@@ -34,13 +34,13 @@ PLAYER_UP = 'image/player_08.png'
 PLAYER_LEFT = 'image/player_20.png'
 PLAYER_RIGHT = 'image/player_17.png'
 
-assert os.path.exists(BLOCK_FILE)\
-       and os.path.exists(CRATE_FILE)\
-       and os.path.exists(END_POINT_FILE)\
-       and os.path.exists(GROUND_FILE)\
-       and os.path.exists(PLAYER_DOWN)\
-       and os.path.exists(PLAYER_UP)\
-       and os.path.exists(PLAYER_LEFT)\
+assert os.path.exists(BLOCK_FILE) \
+       and os.path.exists(CRATE_FILE) \
+       and os.path.exists(END_POINT_FILE) \
+       and os.path.exists(GROUND_FILE) \
+       and os.path.exists(PLAYER_DOWN) \
+       and os.path.exists(PLAYER_UP) \
+       and os.path.exists(PLAYER_LEFT) \
        and os.path.exists(PLAYER_RIGHT)
 
 BLOCK_MAP = {'#': pygame.image.load(BLOCK_FILE),

@@ -15,6 +15,12 @@
 
 
 def load(file_name):
+    # type: (str) -> list
+    """
+    Load level file from a file.
+    :param file_name:
+    :return: List of levels.
+    """
     map_file = open(file_name)
     content = map_file.readlines() + ['\r\n']
     map_file.close()
@@ -40,7 +46,7 @@ def load(file_name):
             for i in range(len(map_text_lines)):
                 if len(map_text_lines[i]) > max_width:
                     max_width = len(map_text_lines[i])
-                # Fill blanks with space.
+                    # Fill blanks with space.
             for i in range(len(map_text_lines)):
                 map_text_lines[i] += ' ' * (max_width - len(map_text_lines[i]))
 
@@ -90,7 +96,3 @@ def load(file_name):
             map_text_lines = []
             map_obj = []
     return levels
-
-
-def get_block(map_data, x, y):
-    return map_data[y][x]
