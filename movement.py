@@ -53,6 +53,7 @@ def move(direction, map_data, player_location, crates):
                 return False
         player_location[0] += x_offset
         player_location[1] += y_offset
+        return True
 
 
 def is_wall(map_data, x, y):

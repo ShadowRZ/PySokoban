@@ -16,7 +16,6 @@ import copy
 
 import pygame
 
-import floodfill as pysokoban_floodfill
 from constants import *
 
 
@@ -36,7 +35,7 @@ def get_surface(map_data, player_location, crates, goals):
 
     data_copy = copy.deepcopy(map_data)
     # Floodfill up
-    pysokoban_floodfill.floodfill(data_copy, player_location)
+    floodfill(data_copy, player_location)
 
     for x in range(len(data_copy)):
         for y in range(len(data_copy[0])):
@@ -48,3 +47,25 @@ def get_surface(map_data, player_location, crates, goals):
         ret.blit(BLOCK_MAP['.'], (goal[0] * TILE_WIDTH, goal[1] * TILE_HEIGHT))
     ret.blit(pygame.image.load(PLAYER_DOWN), (player_location[0] * TILE_WIDTH, player_location[1] * TILE_HEIGHT))
     return ret
+
+
+def floodfill(map_data, location):
+    """
+    Flood-fill the map.
+    :param map_data: Map data
+    :param location:
+    """
+    x = location[0]
+    y = location[1]
+    if not map_data[x + 1][y] in ('o', '#'):
+        map_data[x + 1][y] = 'o'
+        floodfill(map_data, (x + 1, y))
+    if not map_data[x - 1][y] in ('o', '#'):
+        map_data[x - 1][y] = 'o'
+        floodfill(map_data, (x - 1, y))
+    if not map_data[x][y + 1] in ('o', '#'):
+        map_data[x][y + 1] = 'o'
+        floodfill(map_data, (x, y + 1))
+    if not map_data[x][y - 1] in ('o', '#'):
+        map_data[x][y - 1] = 'o'
+        floodfill(map_data, (x, y - 1))

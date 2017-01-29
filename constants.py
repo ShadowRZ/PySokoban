@@ -24,15 +24,15 @@ RIGHT = 'right'
 TILE_WIDTH = 64
 TILE_HEIGHT = 64
 
-BLOCK_FILE = 'image/block_07.png'
-CRATE_FILE = 'image/crate_18.png'
-END_POINT_FILE = 'image/environment_06.png'
-GROUND_FILE = 'image/ground_01.png'
+BLOCK_FILE = "image/block_07.png"
+CRATE_FILE = "image/crate_18.png"
+END_POINT_FILE = "image/environment_06.png"
+GROUND_FILE = "image/ground_01.png"
 
-PLAYER_DOWN = 'image/player_05.png'
-PLAYER_UP = 'image/player_08.png'
-PLAYER_LEFT = 'image/player_20.png'
-PLAYER_RIGHT = 'image/player_17.png'
+PLAYER_DOWN = "image/player_05.png"
+PLAYER_UP = "image/player_08.png"
+PLAYER_LEFT = "image/player_20.png"
+PLAYER_RIGHT = "image/player_17.png"
 
 assert os.path.exists(BLOCK_FILE) \
        and os.path.exists(CRATE_FILE) \

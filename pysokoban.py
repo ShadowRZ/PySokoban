@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # This file is a part of PySokoban.
 # Copyright (C) 2017 @ShadowRZ (HID_System)
 # PySokoban is free software: you can redistribute it and/or modify
@@ -42,15 +44,34 @@ def main(window_width, window_height, fps, file_name, camera_offset):
     """
     # Start up.
     level_counter = 0
+    is_started = False
     # Surfaces
     surface = pygame.display.set_mode((window_width, window_height))
     surface.fill(BG_COLOR)
-    pygame.display.set_caption('PySokoban')
+    pygame.display.set_caption("PySokoban - Press Space to start!")
     # Clock.
     fps_clock = pygame.time.Clock()
+    # Draw title.
+    # noinspection PyUnresolvedReferences
+    title_surface = pygame.image.load("title.png")
+    title_surface_rect = title_surface.get_rect()
+    title_surface_rect.center = (window_width / 2, window_height / 2)
+    surface.blit(title_surface, title_surface_rect)
+    pygame.display.update()
+    # First loop to show a splash screen.
+    while not is_started:
+        for e in pygame.event.get():
+            if e.type == QUIT:
+                shutdown()
+            elif e.type == KEYUP:  # Pressed a key.
+                if e.key == K_SPACE:
+                    is_started = True
+    surface.fill(BG_COLOR)
+    pygame.display.set_caption("PySokoban - Level {}, Steps:{}".format(level_counter, 0))
     # Level data.
     levels = pysokoban_map_data.load(file_name)
     level = levels[level_counter]
+    level_complete = False
 
     game_state = level['start_state']
     player_location = game_state['player']
@@ -101,20 +122,10 @@ def main(window_width, window_height, fps, file_name, camera_offset):
                     # Player make a move.
                     moved = pysokoban_movement.move(direction, map_data, player_location, crates)
                     if moved:
+                        # Add a step to step counter.
                         game_state['step_counter'] += 1
                         redraw = True
 
-                # Level is complete.
-                if pysokoban_level_check.level_is_complete(crates, goals):
-                    redraw = True
-                    level_counter += 1
-                    # Set to next level.
-                    level = levels[level_counter]
-                    game_state = level['start_state']
-                    player_location = game_state['player']
-                    crates = game_state['crates']
-                    map_data = level['map_obj']
-                    goals = level['goals']
                 if redraw:  # Redraw.
                     # First fill with background color.
                     surface.fill(BG_COLOR)
@@ -129,12 +140,75 @@ def main(window_width, window_height, fps, file_name, camera_offset):
                         camera_y_offset = 0
                     # Re-set center of map surface's rectangle.
                     map_surface_rect.center = (window_width / 2 + camera_x_offset, window_height / 2 + camera_y_offset)
+
+                # Level is complete.
+                if pysokoban_level_check.level_is_complete(crates, goals):
+                    level_counter += 1
+                    # Set to next level.
+                    level = levels[level_counter]
+                    game_state = level['start_state']
+                    player_location = game_state['player']
+                    crates = game_state['crates']
+                    map_data = level['map_obj']
+                    goals = level['goals']
+                    # Blit refreshed surface.
+                    surface.blit(map_surface, map_surface_rect)
+                    level_complete_blit(surface, window_height, window_width)
+                    pygame.display.update()
+                    is_started = True
+                    exit_flag = False
+                    while not exit_flag:
+                        for e in pygame.event.get():
+                            if e.type == QUIT:
+                                shutdown()
+                            elif e.type == KEYUP:  # Pressed a key.
+                                if e.key == K_SPACE:
+                                    exit_flag = True
+
+                    # Redraw second time..
+                    # First fill with background color.
+                    surface.fill(BG_COLOR)
+                    # Get the surface.
+                    map_surface = pysokoban_surface.get_surface(map_data, player_location, crates, goals)
+                    # Get the rectangle of map surface.
+                    map_surface_rect = map_surface.get_rect()
+                    # If the width of map surface is smaller than screen surface
+                    if map_surface_rect.width < window_width:
+                        camera_x_offset = 0
+                    if map_surface_rect.height < window_height:
+                        camera_y_offset = 0
+                    # Re-set center of map surface's rectangle.
+                    map_surface_rect.center = (window_width / 2 + camera_x_offset, window_height / 2 + camera_y_offset)
+
+        pygame.display.set_caption("PySokoban - Level {}, Steps:{}"
+                                   .format(level_counter + 1, game_state['step_counter']))
         # Blit surface and update.
         surface.blit(map_surface, map_surface_rect)
         pygame.display.update()
         fps_clock.tick(fps)
 
 
+def level_complete_blit(surface, window_height, window_width):
+    """
+    Blit level complete image.
+    :param surface:
+    :param window_height:
+    :param window_width:
+    """
+    pygame.display.set_caption("PySokoban - Level Complete! Press Space to go to next level!")
+    # Blit level complete image.
+    # noinspection PyUnresolvedReferences
+    title_surface = pygame.image.load("complete.png")
+    title_surface_rect = title_surface.get_rect()
+    title_surface_rect.center = (window_width / 2, window_height / 2)
+    surface.blit(title_surface, title_surface_rect)
+    pygame.display.update()
+
+
 if __name__ == '__main__':
     # noinspection SpellCheckingInspection
-    main(window_width=800, window_height=600, fps=60, file_name='level/Default.pysl', camera_offset=32)
+    file_string = "level/Default.pysl"
+    if sys.argv[0] == '':
+        file_string = sys.argv[0]
+    assert os.path.exists(file_string)
+    main(window_width=800, window_height=600, fps=60, file_name=file_string, camera_offset=32)
