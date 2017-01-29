@@ -71,7 +71,6 @@ def main(window_width, window_height, fps, file_name, camera_offset):
     # Level data.
     levels = pysokoban_map_data.load(file_name)
     level = levels[level_counter]
-    level_complete = False
 
     game_state = level['start_state']
     player_location = game_state['player']
@@ -155,7 +154,6 @@ def main(window_width, window_height, fps, file_name, camera_offset):
                     surface.blit(map_surface, map_surface_rect)
                     level_complete_blit(surface, window_height, window_width)
                     pygame.display.update()
-                    is_started = True
                     exit_flag = False
                     while not exit_flag:
                         for e in pygame.event.get():
