@@ -1,4 +1,3 @@
-# coding=utf-8
 # This file is a part of PySokoban.
 # Copyright (C) 2017 @ShadowRZ (HID_System)
 # PySokoban is free software: you can redistribute it and/or modify
@@ -94,4 +93,4 @@ def load(file_name):
 
 
 def get_block(map_data, x, y):
-    pass
+    return map_data[y][x]

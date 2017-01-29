@@ -12,16 +12,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from constants import *
 
 
-def move(direction, map_data, player_location, map_surface):
-    if direction == UP:
-        pass
-    elif direction == DOWN:
-        pass
-    elif direction == LEFT:
-        pass
-    elif direction == RIGHT:
-        pass
-
+def floodfill(map_data, map_surface, location):
+    x = location[0]
+    y = location[1]
+    if not map_data[x + 1][y] in ('o', '#'):
+        map_data[x + 1][y] = 'o'
+        floodfill(map_data, map_surface, (x + 1, y))
+    if not map_data[x - 1][y] in ('o', '#'):
+        map_data[x - 1][y] = 'o'
+        floodfill(map_data, map_surface, (x - 1, y))
+    if not map_data[x][y + 1] in ('o', '#'):
+        map_data[x][y + 1] = 'o'
+        floodfill(map_data, map_surface, (x, y + 1))
+    if not map_data[x][y - 1] in ('o', '#'):
+        map_data[x][y - 1] = 'o'
+        floodfill(map_data, map_surface, (x, y - 1))

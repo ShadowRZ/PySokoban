@@ -17,7 +17,13 @@ import pygame.display
 import pygame.time
 import pygame.event
 import sys  # sys.exit()
+import movement as pysokoban_movement
+import map_data as pysokoban_map_data
+import surface as pysokoban_surface
 from pygame.locals import *
+from constants import *
+
+level_counter = 0
 
 
 def shutdown():
@@ -25,30 +31,43 @@ def shutdown():
     sys.exit()
 
 
-def main(window_width, window_height, fps):
-    pygame.init()
-    surface = pygame.display.set_mode((window_width, window_height), 0, 32)
+def main(window_width, window_height, fps, file_name):
+    surface = pygame.display.set_mode((window_width, window_height))
+    surface.fill(BG_COLOR)
     pygame.display.set_caption('PySokoban')
     fps_clock = pygame.time.Clock()
+    levels = pysokoban_map_data.load(file_name)
+    player_location = levels[level_counter]['start_state']['player']
+    map_data = levels[level_counter]['map_obj']
+    map_surface = pysokoban_surface.get_surface(map_data, player_location)
+
+    map_surface_rect = map_surface.get_rect()
+    map_surface_rect.center = (window_width / 2, window_height / 2)
     # Event loop.
     while True:
+        # Grab ALL events to process
         for event in pygame.event.get():
             if event.type == QUIT:
                 shutdown()
-            elif event.type == KEYUP:
-                if event.key == K_a:
-                    pass
-                elif event.key == K_d:
-                    pass
-                elif event.key == K_w:
-                    pass
-                elif event.key == K_d:
-                    pass
+            elif event.type == KEYUP:  # Pressed a key.
+                direction = None
+                if event.key == K_a:  # Left.
+                    direction = LEFT
+                elif event.key == K_d:  # Right
+                    direction = RIGHT
+                elif event.key == K_w:  # Up.
+                    direction = UP
+                elif event.key == K_d:  # Down.
+                    direction = DOWN
                 elif event.key == K_BACKSPACE:  # Undo.
                     pass
                 elif event.key == K_SPACE:  # Redo.
                     pass
+                    pysokoban_movement.move(direction, map_data, player_location)
+        surface.blit(map_surface, map_surface_rect)
+        pygame.display.update()
+        fps_clock.tick(fps)
 
 
 if __name__ == '__main__':
-    main(window_width=800, window_height=600, fps=60)
+    main(window_width=800, window_height=600, fps=60, file_name='level/Default.pysl')
